@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>FRIENDS Snake</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <meta name="theme-color" content="#141414" />
+  <link rel="icon" href="icons/icon-192x192.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="FriendsSnake" />
+  <link rel="apple-touch-icon" href="icons/icon-180x180.png" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+    <header>
+      <h1 class="title">F<span class="dot red"></span>R<span class="dot yellow"></span>I<span class="dot blue"></span>E<span class="dot red"></span>N<span class="dot yellow"></span>D<span class="dot blue"></span>S Snake</h1>
+      <div class="controls">
+        <button id="btnPlay">▶ Play / Pause</button>
+        <button id="btnMute">🔊 Music</button>
+        <button id="btnReset">↺ Reset</button>
+        <label class="speed">
+          Speed <input type="range" id="speed" min="5" max="20" value="10" />
+        </label>
+      </div>
+    </header>
+    <main>
+      <canvas id="game" width="800" height="600"></canvas>
+      <aside class="panel">
+        <div class="stat"><span>Score:</span> <b id="score">0</b></div>
+        <div class="stat"><span>Best:</span> <b id="best">0</b></div>
+        <div class="stat"><span>Level:</span> <b id="level">1</b></div>
+        <div class="legend">
+          <p>🍩 Food • ☕ Coffee (speed) • 🦃 Turkey (points) • 🖼️ Frame (ghost)</p>
+          <p>Blue pads = Boost zones • Orange blocks = Couch obstacles</p>
+        </div>
+        <div class="install" id="installBox" hidden>
+          <button id="btnInstall">Install App</button>
+        </div>
+        <div class="howto">
+          <h3>How to play</h3>
+          <ul>
+            <li>Use ↑ ↓ ← → or WASD to move</li>
+            <li>Avoid couches, don't bite your tail</li>
+            <li>Collect power-ups for boosts and bonuses</li>
+            <li>Step on blue pads for a temporary speed boost</li>
+          </ul>
+        </div>
+      </aside>
+    </main>
+    <footer>Built with ❤️ – FRIENDS-themed Snake (PWA)</footer>
+  </div>
+
+  <audio id="bgm" src="audio/bgm_loop.wav" loop></audio>
+  <script src="game.js"></script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./service-worker.js");
+      });
+    }
+    // PWA install prompt handling
+    let deferredPrompt;
+    const installBox = document.getElementById("installBox");
+    const btnInstall = document.getElementById("btnInstall");
+    window.addEventListener("beforeinstallprompt", (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installBox.hidden = false;
+    });
+    btnInstall?.addEventListener("click", async () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      await deferredPrompt.userChoice;
+      deferredPrompt = null;
+      installBox.hidden = true;
+    });
+  </script>
+</body>
+</html>
